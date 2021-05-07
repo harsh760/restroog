@@ -10,14 +10,14 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="/static/img/logo.ico">
 
-    <title>Home FoodFrenzy</title>
+    <title>Home Foodigo</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
     <link href="/static/css/mystyle.css" rel="stylesheet">
-    <link href="/static/css/simple-sidebar.css" rel="stylesheet">
+    <link href="/static/css/simple-sidebar2.css" rel="stylesheet">
 
     <!-- This is for card view -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
@@ -28,7 +28,7 @@
     <!-- navbar centred text vertically with  line-height-->
     <nav class="navbar navbar-nav navbar-default navbar-fixed-top" style="line-height:50px;height:60px;">
         <div class="container" style="margin:0 !important;">
-            <span class="navbar-left" style="font-size:1.2em;"><img src="/static/img/logo.gif" class="logo_bitch"/>   FoodFrenzy</span>
+            <span class="navbar-left" style="font-size:1.2em;"><img src="/static/img/logo.gif" class="logo_bitch"/>   Foodigo</span>
 
             <!-- Search bar -->
             <form class="input-group" style="height: 100%;" action="/search/" method="post">
@@ -153,66 +153,7 @@
                     <div class="rest_details lefty" style="float:left;">
                         <div class="row">
                             {% if restaurants %}
-                            <div class="col-sm-4">
-                                <div class="card" style="width: 15rem;">
-                                    <a href = "/restaurant/McDonalds"><img class="card-img-top" src="/static/img/mcdonalds-logo.jpg" alt="Card image cap"></a>
-                                    <div class="card-block">
-                                        <h4 class="card-title"><a href = "/restaurant/McDonalds">Mc Donalds</a></h4>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-sm-4">
-                                <div class="card" style="width: 15rem;">
-                                    <a href = "/restaurant/Subway"><img class="card-img-top" src="/static/img/sub.jpg" alt="Card image cap">
-                                    </a><div class="card-block">
-                                        <h4 class="card-title"><a href = "/restaurant/Subway">Subway</a></h4>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-sm-4">
-                                <div class="card" style="width: 15rem;">
-                                    <a href = "/restaurant/PizzaHut"><img class="card-img-top" src="/static/img/pizza.png" alt="Card image cap"></a>
-                                    <div class="card-block">
-                                        <h4 class="card-title"><a href = "/restaurant/PizzaHut">Pizza Hut</a></h4>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-sm-4">
-                                <div class="card" style="width: 15rem;">
-                                    <a href = "/restaurant/BurgerKing"><img class="card-img-top" src="/static/img/bk.png" alt="Card image cap">
-                                    </a><div class="card-block">
-                                        <h4 class="card-title"><a href = "/restaurant/BurgerKing">Burger King</a></h4>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-sm-4">
-                                <div class="card" style="width: 15rem;">
-                                    <a href = "/restaurant/Dominos"><img class="card-img-top" src="/static/img/dlogo.png" alt="Card image cap"></a>
-                                    <div class="card-block">
-                                        <h4 class="card-title"><a href = "/restaurant/Dominos">Dominos</a></h4>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-sm-4">
-                                        <div class="card" style="width: 15rem;">
-                                    <a href = "/restaurant/DrukenMonkey"><img class="card-img-top" src="/static/img/drmlogo.png" alt="Card image cap"></a>
-                                    <div class="card-block">
-                                        <h4 class="card-title"><a href = "/restaurant/DrukenMonkey">Drunken Monkey</a></h4>
-
-                                    </div>
-                                </div>
-                            </div>
-
+                           
                             {% for restaurant in restaurants %}
                             {% if restaurant.name != "Dominos" and restaurant.name != "McDonalds" and restaurant.name != "PizzaHut" and restaurant.name != "Subway" and restaurant.name != "BurgerKing"  %}
                             <div class="col-sm-4">
@@ -248,84 +189,7 @@
                                 
 
                                 {% for rt in rest %}
-                                {% if rt.name == "Dominos" %}
-                                <div class="col-sm-4">
-                                    <div class="card" style="width: 15rem;">
-                                        <a href = "/restaurant/Dominos"><img class="card-img-top" src="/static/img/dlogo.png" alt="Card image cap"></a>
-                                        <div class="card-block">
-                                            <h4 class="card-title"><a href = "/restaurant/Dominos">Dominos</a></h4>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endif %}
                                 
-                                {% if rt.name == "McDonalds" %}
-                                <div class="col-sm-4">
-                                    <div class="card" style="width: 15rem;">
-                                        <a href = "/restaurant/McDonalds"><img class="card-img-top" src="/static/img/mcdonalds-logo.jpg" alt="Card image cap"></a>
-                                        <div class="card-block">
-                                            <h4 class="card-title"><a href = "/restaurant/McDonalds">Mc Donalds</a></h4>
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {% endif %}
-
-                                {% if rt.name == "PizzaHut" %}
-
-                                <div class="col-sm-4">
-                                    <div class="card" style="width: 15rem;">
-                                        <a href = "/restaurant/PizzaHut"><img class="card-img-top" src="/static/img/pizza.png" alt="Card image cap"></a>
-                                        <div class="card-block">
-                                            <h4 class="card-title"><a href = "/restaurant/PizzaHut">Pizza Hut</a></h4>
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {% endif %}
-
-                                {% if rt.name == "Subway" %}
-                                <div class="col-sm-4">
-                                    <div class="card" style="width: 15rem;">
-                                        <a href = "/restaurant/Subway"><img class="card-img-top" src="/static/img/sub.jpg" alt="Card image cap">
-                                        </a><div class="card-block">
-                                            <h4 class="card-title"><a href = "/restaurant/Subway">Subway</a></h4>
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {% endif %}
-
-                                {% if rt.name == "BurgerKing" %}
-                                <div class="col-sm-4">
-                                    <div class="card" style="width: 15rem;">
-                                        <a href = "/restaurant/BurgerKing"><img class="card-img-top" src="/static/img/bk.png" alt="Card image cap">
-                                        </a><div class="card-block">
-                                            <h4 class="card-title"><a href = "/restaurant/BurgerKing">Burger King</a></h4>
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {% endif %}
-
-                                {% if rt.name == "DrukenMonkey" %}                                
-                                
-                                <div class="col-sm-4">
-                                            <div class="card" style="width: 15rem;">
-                                        <a href = "/restaurant/DrukenMonkey"><img class="card-img-top" src="/static/img/drmlogo.png" alt="Card image cap"></a>
-                                        <div class="card-block">
-                                            <h4 class="card-title"><a href = "/restaurant/DrukenMonkey">Drunken Monkey</a></h4>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endif %}
-
                                 {% if rt.name != "Dominos" and rt.name != "McDonalds" and rt.name != "PizzaHut" and rt.name != "Subway" and rt.name != "BurgerKing"  %}
                                 <div class="col-sm-4">
                                     <div class="card" style="width: 15rem;">

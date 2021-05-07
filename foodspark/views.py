@@ -506,6 +506,8 @@ def history(request):
 		query = Order.objects.order_by('-pk').all()
 		pending_rest = {}
 		pending_items = {}
+		reject_rest = {}
+		reject_items = {}
 		history_rest = {}
 		history_items = {}
 		eta={}
@@ -836,12 +838,12 @@ def otp_sent(request):
 			s.starttls()
 			print("HELLOOOO")
 			# Authentication
-			s.login("foodfrenzy18@gmail.com", "cjqzmzhdiuhiescg")
+			s.login("Foodigo18@gmail.com", "cjqzmzhdiuhiescg")
 			# message to be sent
 			#message = "This is your new password: " + str(OTP)
 			# sending the mail
 			print("HELLO3")
-			s.sendmail("foodfrenzy18@gmail.com", email, str(msg))
+			s.sendmail("Foodigo18@gmail.com", email, str(msg))
 			# terminating the session
 			s.quit()
 			return render(request,"foodspark/login.html")
