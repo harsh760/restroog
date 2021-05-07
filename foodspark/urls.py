@@ -36,9 +36,9 @@ urlpatterns = [
     re_path(r'^restaurant/(?P<restname>[a-zA-Z0-9\s]+)/?$',views.restview,name='restview'),
     re_path(r'^about/?$',views.about,name='about'),
 
-    # re_path(r'^deleteAccount/?$',views.deleteAccount,name='deleteAccount'),
-    # re_path(r'^forget_password/?$',views.otp_sent,name='forget_password'),
-    # re_path(r'^email/?$',views.email,name='email'),
+    re_path(r'^deleteAccount/?$',views.deleteAccount,name='deleteAccount'),
+    re_path(r'^forget_password/?$',views.otp_sent,name='forget_password'),
+    re_path(r'^email/?$',views.email,name='email'),
 ]
 
 # urlpatterns = [

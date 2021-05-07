@@ -1,12 +1,22 @@
 from django.shortcuts import get_object_or_404,render, redirect
 from django.http import HttpResponse
-from .models import *
-import json
 from django.views.decorators import csrf
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib import messages
 from django.core.exceptions import *
+from .models import *
+from geopy.distance import geodesic
+from geopy.geocoders import Nominatim
 import datetime
+import json
+import smtplib 
+import statistics
+from email.mime.multipart import MIMEMultipart 
+from email.mime.text import MIMEText 
+from email.mime.base import MIMEBase 
+from email import encoders
+import numpy as np
+import math, random
 
 def home(request):
 	if 'id' in request.session.keys():
@@ -67,42 +77,6 @@ def home(request):
 			return render(request,'foodspark/resthome.html',context)
 	else:
 		return render(request,"foodspark/login.html")
-# def home(request):
-# 	if 'id' in request.session.keys():
-# 		if request.session['type'] == 'customer':
-# 			foodlist = FoodItem.objects.all().order_by('-ordercount')[:5]
-# 			restaurants = Restaurant.objects.order_by('name')
-# 			context = {
-# 				'customer':Customer.objects.get(email=request.session['id']),
-# 				'restaurants' : restaurants,
-# 				'foodlist' : foodlist,
-# 			}
-# 			return render(request,'foodspark/userhome.html',context)
-# 		elif request.session['type'] == 'restaurant':
-# 			restaurant = Restaurant.objects.get(email=request.session['id'])
-# 			query = Order.objects.order_by('-pk').all()
-# 			dic = {}
-# 			customer = {}
-# 			for x in query:
-# 				if x.restaurant_id == restaurant.email:
-# 					dic2 = {}
-# 					if(x.deliverystatus == 'd'):
-# 						continue
-# 					x.calamount()
-# 					for i,j in zip(x.getfooditems(),x.getqty()):
-# 						dic2[i] = j
-# 					dic[x] = dic2
-# 					customer[x] = x.customer
-
-# 			context = {
-# 				'foods' : dic,
-# 				'customer' : customer,
-# 				'restaurant' : restaurant,
-# 			}
-
-# 			return render(request,'foodspark/resthome.html',context)
-# 	else:
-# 		return render(request,"foodspark/login.html")
 
 @ensure_csrf_cookie
 def login(request):
@@ -158,18 +132,32 @@ def signup(request):
 		password = request.POST.get('password')
 		address = request.POST.get('address')
 		usertype = request.POST.get('usertype')
+		geolocator = Nominatim(user_agent = 'http')
+		loca = geolocator.geocode(address)
+		print(loca.address)
+
 		if usertype == 'Customer':
 			user = Customer(name = name, email = email, phone = phone, address = address)
 			user.set_password(user.make_password(password))
 			user.save()
 			request.session['id'] = email
 			request.session['type'] = 'customer'
+			l1=(loca.latitude,loca.longitude)
+			t=Locuser()
+			t.custid = email
+			t.address_user = l1
+			t.save()
 		elif usertype == 'Restaurant':
 			user = Restaurant(name= name, email = email, phone = phone, address = address)
 			user.set_password(user.make_password(password))
 			user.save()
 			request.session['id'] = email
 			request.session['type'] = 'restaurant'
+			l2=(loca.latitude,loca.longitude)
+			t=Locrest()
+			t.restid=email
+			t.address_rest=l2
+			t.save()
 		# return redirect('/')
 
 		elif usertype == 'DeliveryBoy':
@@ -203,15 +191,24 @@ def editDetails(request):
 			phone = request.POST.get('phone')
 			address = request.POST.get('address')
 			city = request.POST.get('city')
-
+			password = request.POST.get('password')
 			if name!="":
 				customer.name = name
 			if address!="":
 				customer.address = address
+				geolocator = Nominatim()
+				loca = geolocator.geocode(address)
+				print(loca.address)
+				l1=(loca.latitude,loca.longitude)
+				t=Locuser.objects.get(custid=request.session['id'])
+				t.address_user = l1
+				t.save()
 			if city!="":
 				customer.city	= city
 			if phone!="":
 				customer.phone = phone
+			if password!="":
+				customer.set_password(customer.make_password(password))
 			customer.save()
 			messages.success(request,'Successfully saved :)')
 			return render(request,'foodspark/userdetails.html',context)
@@ -373,8 +370,23 @@ def restview(request,restname):
 	if 'id' in request.session.keys():
 		try:
 			customer = Customer.objects.get(email=request.session['id'])
+			print(customer)
 			restaurant =Restaurant.objects.get(name=restname)
+			print(restaurant)
 			foodall = FoodItem.objects.all()
+
+			recall = FoodItem.objects.all().order_by('-ordercount')[:5]
+
+			add1=Locuser.objects.get(custid=request.session['id'])
+			print(add1.address_user)
+			add_user=eval(add1.address_user)
+			add2=Locrest.objects.get(restid=restaurant.email)
+			print(add2)
+			add_rest=eval(add2.address_rest)
+			distance=geodesic(add_user,add_rest).kilometers
+			print(distance)
+			speed=30
+			eta=str(float(distance/speed))
 
 			ratings=Ratings.objects.filter(restid_id=restaurant.email)
 			count=0
@@ -394,12 +406,23 @@ def restview(request,restname):
 						fooditems[x.cuisine].append(x)
 					except KeyError:
 						fooditems[x.cuisine] = [x]
+			recitems = []
+			for x in recall:
+				if x.resid.email == restaurant.email:
+					try:
+						recitems.append(x.name)
+					except KeyError:
+						recitems = [x.name]
+			print(recitems)
 			context = {
 				'customer' : customer,
 				'restaurant': restaurant,
 				'fooditems' : fooditems,
+				'recitems' : recitems,
+				'distance' : round(distance,2),
 				'mean_ratings' : mean_ratings
 			}
+			print(context)
 			return render(request,'foodspark/restview.html',context)
 		except ObjectDoesNotExist:
 			return HttpResponse("Sorry no restaurant with this name")
@@ -485,6 +508,7 @@ def history(request):
 		pending_items = {}
 		history_rest = {}
 		history_items = {}
+		eta={}
 		for x in query:
 			if x.customer == customer:
 				if(x.deliverystatus == 'p'):
@@ -495,6 +519,14 @@ def history(request):
 						dic2[i] = j
 					pending_items[x] = dic2
 					pending_rest[x] = x.restaurant
+					add1=Locuser.objects.get(custid=request.session['id'])
+					add_user=eval(add1.address_user)
+					add2=Locrest.objects.get(restid=x.restaurant_id)
+					add_rest=eval(add2.address_rest)
+					distance=geodesic(add_user,add_rest).kilometers
+					speed=30
+					eta[x]=str(round(float(distance/speed)*60,2))
+					print(eta)
 				if(x.deliverystatus == 'd'):
 					dic2 = {}
 					x.calamount()
@@ -502,6 +534,13 @@ def history(request):
 						dic2[i] = j
 					history_items[x] = dic2
 					history_rest[x] = x.restaurant
+				if(x.deliverystatus == 'r'):
+					dic3 = {}
+					x.calamount()
+					for i,j in zip(x.getfooditems(),x.getqty()):
+						dic3[i] = j
+					reject_items[x] = dic3
+					reject_rest[x] = x.restaurant
 
 
 		context = {
@@ -510,6 +549,9 @@ def history(request):
 			'pending_rest' : pending_rest,
 			'history_items' : history_items,
 			'history_rest' : history_rest,
+			'reject_items' : reject_items,
+			'reject_rest' : reject_rest,
+			'eta' : eta
 		}
 		return render(request,"foodspark/userhistory.html",context)
 	else:
@@ -762,3 +804,49 @@ def restrating(request,restname):
 		return redirect('/')
 	else:
 		return render(request,"foodspark/login.html")
+
+def deleteAccount(request):
+	if 'id' in request.session.keys() and request.session['type'] == 'customer':
+		Customer.objects.get(email=request.session['id']).delete()
+	if 'id' in request.session.keys() and request.session['type'] == 'restaurant':
+		Restaurant.objects.get(email=request.session['id']).delete()
+	if 'id' in request.session.keys() and request.session['type'] == 'deliveryboy':
+		DeliveryBoy.objects.get(email=request.session['id']).delete()
+		return redirect(request,"foodspark/login.html")
+	else:
+		return render(request,"foodspark/login.html")
+
+def otp_sent(request):
+	if request.method == 'POST':
+		email = request.POST.get('email')
+		try:	
+			customer = Customer.objects.get(email=email)
+			digits = "0123456789"
+			OTP = ""
+			for i in range(4) :
+				OTP += digits[math.floor(random.random() * 10)]
+			customer.set_password(customer.make_password(OTP))
+			customer.save()
+			msg = MIMEMultipart() 
+			msg['Subject'] = "This is your new password"
+			body = OTP
+			msg.attach(MIMEText(str(body), 'plain'))
+			s = smtplib.SMTP('smtp.gmail.com', 587)
+			# start TLS for security
+			s.starttls()
+			print("HELLOOOO")
+			# Authentication
+			s.login("foodfrenzy18@gmail.com", "cjqzmzhdiuhiescg")
+			# message to be sent
+			#message = "This is your new password: " + str(OTP)
+			# sending the mail
+			print("HELLO3")
+			s.sendmail("foodfrenzy18@gmail.com", email, str(msg))
+			# terminating the session
+			s.quit()
+			return render(request,"foodspark/login.html")
+		except:
+			return HttpResponse("Sorry no user with this email")
+			
+def email(request):
+	return render(request,"foodspark/email.html")
