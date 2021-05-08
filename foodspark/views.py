@@ -410,7 +410,7 @@ def restview(request, restname):
             if count == 0:
                 mean_ratings = 'NA'
             else:
-                mean_ratings = float(sum1/count)
+                mean_ratings = str(float(sum1/count))
 
             fooditems = {}
             for x in foodall:
@@ -432,8 +432,8 @@ def restview(request, restname):
                 'restaurant': restaurant,
                 'fooditems': fooditems,
                 'recitems': recitems,
-                'distance': round(distance, 2),
-                'mean_ratings': round(mean_ratings, 2)
+                'distance': distance,
+                'mean_ratings': mean_ratings
             }
             print(context)
             return render(request, 'foodspark/restview.html', context)
@@ -547,7 +547,7 @@ def history(request):
                     add_rest = eval(add2.address_rest)
                     distance = geodesic(add_user, add_rest).kilometers
                     speed = 30
-                    eta[x] = str(round(float(distance/speed)*60, 2))
+                    eta[x] = str(int(float(distance/speed)*60))
                     print(eta)
                 if(x.deliverystatus == 'd'):
                     dic2 = {}
