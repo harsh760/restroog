@@ -1,5 +1,5 @@
 """
-WSGI config for restro project.
+WSGI config for foodigo project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'restro.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'foodigo.settings')
 
 application = get_wsgi_application()
